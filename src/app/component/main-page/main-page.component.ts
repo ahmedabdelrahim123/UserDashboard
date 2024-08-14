@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService, User } from '../../service/api.service';
-import { PaginationService } from '../../service/pagination.service';
 
 @Component({
   selector: 'app-main-page',
@@ -8,35 +7,44 @@ import { PaginationService } from '../../service/pagination.service';
 })
 export class MainPageComponent implements OnInit {
   users: User[] = [];
-  searchText = '';
-  page = 1;
-  itemsPerPage = 6;
-  totalItems = 0;
+  filteredUsers: User[] = [];
+  currentPage: number = 1;
+  itemsPerPage: number = 6;
+  totalItems: number = 0;
+  totalPages: number = 0;
+  searchId: string = '';
 
-  constructor(
-    private apiService: ApiService,
-    private paginationService: PaginationService
-  ) {}
+  constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.fetchUsers();
   }
 
-  fetchUsers(page: number = this.page): void {
+  fetchUsers(page: number = this.currentPage): void {
     this.apiService.getAllData(page, this.itemsPerPage).subscribe(response => {
       this.users = response.data;
       this.totalItems = response.total;
+      this.totalPages = response.total_pages;
+      this.filterUsers();  // Apply search filter after fetching data
     });
   }
 
-  get filteredUsers(): User[] {
-    // Use the pagination service to get the correct page of data
-    const filtered = this.paginationService.getPaginatedItems(this.users, this.page, this.itemsPerPage);
-    return filtered;
+  filterUsers(): void {
+    if (this.searchId) {
+      this.filteredUsers = this.users.filter(user =>
+        user.id.toString().includes(this.searchId)
+      );
+    } else {
+      this.filteredUsers = this.users;
+    }
   }
 
   onPageChange(page: number): void {
-    this.page = page;
+    this.currentPage = page;
     this.fetchUsers(page);
+  }
+
+  onSearchChange(): void {
+    this.filterUsers();
   }
 }

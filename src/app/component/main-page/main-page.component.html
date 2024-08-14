@@ -1,7 +1,12 @@
-<div class="container mt-4">
+<div class="container mt-5">
   <!-- Search Bar -->
   <div class="mb-3">
-    <input type="text" class="form-control" placeholder="Search by ID..." [(ngModel)]="searchText">
+    <input 
+      type="text" 
+      class="form-control" 
+      placeholder="Search by ID..." 
+      [(ngModel)]="searchId" 
+      (input)="onSearchChange()">
   </div>
 
   <!-- Data Table -->
@@ -25,13 +30,28 @@
         <td>
           <img [src]="user.avatar" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px;">
         </td>
-          <td>
-            <button class="btn btn-primary btn-sm" [routerLink]="['/user-details', user.id]">View</button>
-          </td>
+        <td>
+          <button class="btn btn-primary btn-sm" [routerLink]="['/user-details', user.id]">View</button>
+        </td>
       </tr>
     </tbody>
   </table>
 
   <!-- Pagination Controls -->
-  <pagination-controls (pageChange)="onPageChange($event)" ></pagination-controls>
+  <div class="panel-footer">
+    <div class="row">
+      <div class="col-sm-6 col-xs-6">
+        <ngb-pagination
+          [collectionSize]="totalItems"
+          [pageSize]="itemsPerPage"
+          [(page)]="currentPage"
+          [maxSize]="5"
+          [boundaryLinks]="true"
+          size="sm"
+          aria-label="User Pagination"
+          (pageChange)="onPageChange($event)"
+        ></ngb-pagination>
+      </div>
+    </div>
+  </div>
 </div>

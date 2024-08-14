@@ -6,9 +6,9 @@ import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { MainPageComponent } from './component/main-page/main-page.component';
 import { UserDetailsComponent } from './component/user-details/user-details.component';
+import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -23,7 +23,7 @@ import { UserDetailsComponent } from './component/user-details/user-details.comp
     NgbModule,
     NgbModalModule,
     FormsModule,
-    NgxPaginationModule
+    NgbPaginationModule
   ],
   providers: [],
   bootstrap: [AppComponent]

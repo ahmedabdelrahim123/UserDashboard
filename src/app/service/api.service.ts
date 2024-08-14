@@ -46,12 +46,18 @@ export class ApiService {
    * @param perPage The number of items per page.
    * @returns Observable<ApiResponse>
    */
-getAllData(page: number = 1, perPage: number = 6): Observable<ApiResponse> {
+// Updated API Service
+getAllData(page: number = 1, perPage: number = 6, searchId: string = ''): Observable<ApiResponse> {
   return this.http.get<ApiResponse>(`${this.apiUrl}?page=${page}&per_page=${perPage}`)
     .pipe(
+      map(response => ({
+        ...response,
+        data: response.data.filter(user => user.id.toString().includes(searchId))
+      })),
       catchError(this.handleError<ApiResponse>('getAllData'))
     );
 }
+
 
   /**
    * Fetch a single record by ID.
