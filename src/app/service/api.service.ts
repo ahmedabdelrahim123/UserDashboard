@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, BehaviorSubject } from 'rxjs';
-import { catchError, map, finalize, delay } from 'rxjs/operators';
+import { catchError, map, finalize, delay, shareReplay } from 'rxjs/operators';
 
 // Define the interfaces for the API response and user data
 export interface User {
@@ -32,6 +32,9 @@ export class ApiService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   loading$ = this.loadingSubject.asObservable();
 
+  // Cache for all data
+  private allDataCache = new Map<string, Observable<ApiResponse>>();
+
   constructor(private http: HttpClient) { }
 
   /**
@@ -42,8 +45,13 @@ export class ApiService {
    * @returns Observable<ApiResponse>
    */
   getAllData(page: number = 1, perPage: number = 6, searchId: string = ''): Observable<ApiResponse> {
+    const cacheKey = `${page}-${perPage}-${searchId}`;
+    if (this.allDataCache.has(cacheKey)) {
+      return this.allDataCache.get(cacheKey)!;
+    }
+
     this.loadingSubject.next(true); // Start loading
-    return this.http.get<ApiResponse>(`${this.apiUrl}?page=${page}&per_page=${perPage}`)
+    const request$ = this.http.get<ApiResponse>(`${this.apiUrl}?page=${page}&per_page=${perPage}`)
       .pipe(
         delay(1000), // Add a delay of 1000ms (1 second) to simulate loading
         map(response => ({
@@ -51,8 +59,12 @@ export class ApiService {
           data: response.data.filter(user => user.id.toString().includes(searchId))
         })),
         catchError(this.handleError<ApiResponse>('getAllData')),
-        finalize(() => this.loadingSubject.next(false)) // Stop loading
+        finalize(() => this.loadingSubject.next(false)), // Stop loading
+        shareReplay(1) // Cache the response
       );
+
+    this.allDataCache.set(cacheKey, request$);
+    return request$;
   }
 
   /**
