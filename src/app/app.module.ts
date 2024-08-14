@@ -9,12 +9,14 @@ import { FormsModule } from '@angular/forms';
 import { MainPageComponent } from './component/main-page/main-page.component';
 import { UserDetailsComponent } from './component/user-details/user-details.component';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { LoadingBarComponent } from './component/loading-bar/loading-bar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainPageComponent,
-    UserDetailsComponent
+    UserDetailsComponent,
+    LoadingBarComponent
   ],
   imports: [
     BrowserModule,
